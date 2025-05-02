@@ -21,10 +21,27 @@ public class Store extends BaseEntity {
     @Column(nullable = false, length = 10)
     private String name;
 
+    @Column(nullable = false, length = 50)
+    private String address;
+
+    @Column(columnDefinition = "DOUBLE DEFAULT 0.0 NOT NULL")
+    private Float score;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "region_id")
     private Region region;
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
     private List<Review> reviewList = new ArrayList<>();
+
+    @Override
+    public String toString() {
+        return "Store{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                ", score=" + score +
+                ", region=" + (region != null ? region.getName() : "N/A") +
+                '}';
+    }
 }
