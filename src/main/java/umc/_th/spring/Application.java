@@ -7,6 +7,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import umc._th.spring.domain.enums.MissionStatus;
+import umc._th.spring.service.MemberService.MemberQueryService;
 import umc._th.spring.service.MissionService.MissionQueryService;
 import umc._th.spring.service.StoreService.StoreQueryService;
 
@@ -41,6 +42,9 @@ public class Application {
 
 			missionService.findMissionByMemberIdAndStatus(memberId, missionStatus)
 					.forEach(System.out::println);
+
+			MemberQueryService memberService = context.getBean(MemberQueryService.class);
+			memberService.findById(memberId).ifPresent(System.out::println);
 		};
 	}
 

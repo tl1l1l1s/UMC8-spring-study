@@ -39,12 +39,19 @@ public class Member extends BaseEntity {
     private SocialType socialType;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(10) DEFAULT 'ACTIVE'")
     private MemberStatus status;
 
     private LocalDate inactiveDate;
 
     private String email;
 
+    private String phone;
+
+    @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean isPhoneAuthorized;
+
+    @Column(columnDefinition = "INTEGER DEFAULT 0")
     private Integer point;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -61,4 +68,21 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<MemberNotificationType> memberNotificationTypeList = new ArrayList<>();
+
+    @Override
+    public String toString() {
+        return "Member" +
+                "id " + id
+                + ", name" + name
+                + ", address" + address
+                + ", specAddress " + specAddress
+                + ", gender " + gender
+                + ", socialType " + socialType
+                + ", status " + status
+                + ", inactiveDate " + inactiveDate
+                + ", email " + email
+                + ", phone " + phone
+                + ", isPhoneAuthorized " + isPhoneAuthorized
+                + ", point " + point;
+    }
 }
