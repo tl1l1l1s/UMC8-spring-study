@@ -6,6 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import umc._th.spring.domain.enums.MissionStatus;
+import umc._th.spring.service.MissionService.MissionQueryService;
 import umc._th.spring.service.StoreService.StoreQueryService;
 
 @SpringBootApplication
@@ -19,6 +21,7 @@ public class Application {
 	@Bean
 	public CommandLineRunner run(ApplicationContext context) {
 		return args -> {
+			// 상점 찾는 쿼리
 			StoreQueryService storeService = context.getBean(StoreQueryService.class);
 
 			String name = "요아정";
@@ -29,6 +32,14 @@ public class Application {
 			System.out.println("Score: " + score);
 
 			storeService.findStoreByNameAndScore(name, score)
+					.forEach(System.out::println);
+
+			MissionQueryService missionService = context.getBean(MissionQueryService.class);
+
+			Long memberId = 1L;
+			MissionStatus missionStatus = MissionStatus.CHALLENGING;
+
+			missionService.findMissionByMemberIdAndStatus(memberId, missionStatus)
 					.forEach(System.out::println);
 		};
 	}
