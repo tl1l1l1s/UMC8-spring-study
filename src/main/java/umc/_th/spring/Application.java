@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import umc._th.spring.domain.enums.MissionStatus;
 import umc._th.spring.service.MemberService.MemberQueryService;
@@ -45,6 +46,9 @@ public class Application {
 
 			MemberQueryService memberService = context.getBean(MemberQueryService.class);
 			memberService.findById(memberId).ifPresent(System.out::println);
+
+			missionService.findAllMissionsByRegion(1L, 1L, PageRequest.of(1, 10))
+					.forEach(System.out::println);
 		};
 	}
 
