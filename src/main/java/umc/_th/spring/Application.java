@@ -41,7 +41,7 @@ public class Application {
 			Long memberId = 1L;
 			MissionStatus missionStatus = MissionStatus.CHALLENGING;
 
-			missionService.findMissionByMemberIdAndStatus(memberId, missionStatus)
+			missionService.findAllMissionsByMemberIdAndStatus(memberId, missionStatus)
 					.forEach(System.out::println);
 
 			MemberQueryService memberService = context.getBean(MemberQueryService.class);

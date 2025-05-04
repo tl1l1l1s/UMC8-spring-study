@@ -8,6 +8,6 @@ import umc._th.spring.domain.enums.MissionStatus;
 import java.util.List;
 
 public interface MissionRepositoryCustom {
-    List<Mission> findByMemberIdAndStatus(Long memberId, MissionStatus status);
+    List<Mission> findAllByMemberIdAndStatus(Long memberId, MissionStatus status);
     Page<Mission> findAllByRegion(Long memberId, Long regionId, Pageable pageable);
 }

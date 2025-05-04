@@ -29,7 +29,7 @@ public class MissionRepositoryImpl implements MissionRepositoryCustom{
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<Mission> findByMemberIdAndStatus(@NonNull Long memberId, @NonNull MissionStatus status) {
+    public List<Mission> findAllByMemberIdAndStatus(@NonNull Long memberId, @NonNull MissionStatus status) {
         BooleanBuilder predicate = new BooleanBuilder()
                 .and(memberMission.member.id.eq(memberId))
                 .and(memberMission.status.eq(status));
