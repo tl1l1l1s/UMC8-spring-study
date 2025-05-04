@@ -7,9 +7,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import umc._th.spring.domain.Review;
 import umc._th.spring.domain.enums.MissionStatus;
 import umc._th.spring.service.MemberService.MemberQueryService;
 import umc._th.spring.service.MissionService.MissionQueryService;
+import umc._th.spring.service.ReviewService.ReviewCommandService;
 import umc._th.spring.service.StoreService.StoreQueryService;
 
 @SpringBootApplication
@@ -49,6 +51,10 @@ public class Application {
 
 			missionService.findAllMissionsByRegion(1L, 1L, PageRequest.of(1, 10))
 					.forEach(System.out::println);
+
+			ReviewCommandService reviewService = context.getBean(ReviewCommandService.class);
+			Review writtenReview = reviewService.createReview(memberId, 1L, "리뷰 작성 확인", 5F);
+			System.out.println(writtenReview);
 		};
 	}
 
