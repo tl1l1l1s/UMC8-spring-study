@@ -29,15 +29,23 @@ public class MissionRepositoryImpl implements MissionRepositoryCustom{
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<Mission> findAllByMemberIdAndStatus(@NonNull Long memberId, @NonNull MissionStatus status) {
+    public Page<Mission> findAllByMemberIdAndStatus(@NonNull Long memberId, @NonNull MissionStatus status, Pageable pageable) {
         BooleanBuilder predicate = new BooleanBuilder()
                 .and(memberMission.member.id.eq(memberId))
                 .and(memberMission.status.eq(status));
 
-        return queryFactory.selectFrom(mission)
+        List<Mission> missionList = queryFactory.selectFrom(mission)
                 .join(memberMission).on(mission.id.eq(memberMission.mission.id))
                 .where(predicate)
                 .fetch();
+
+        long total = jpaQueryFactory
+                .select(mission.count())
+                .from(mission)
+                .where(predicate)
+                .fetchOne();
+
+        return new PageImpl<>(missionList, pageable, total);
     }
 
     @Override

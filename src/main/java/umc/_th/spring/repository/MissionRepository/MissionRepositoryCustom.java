@@ -5,9 +5,7 @@ import org.springframework.data.domain.Pageable;
 import umc._th.spring.domain.Mission;
 import umc._th.spring.domain.enums.MissionStatus;
 
-import java.util.List;
-
 public interface MissionRepositoryCustom {
-    List<Mission> findAllByMemberIdAndStatus(Long memberId, MissionStatus status);
+    Page<Mission> findAllByMemberIdAndStatus(Long memberId, MissionStatus status, Pageable pageable);
     Page<Mission> findAllByRegion(Long memberId, Long regionId, Pageable pageable);
 }

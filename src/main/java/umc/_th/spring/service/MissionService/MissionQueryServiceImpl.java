@@ -9,8 +9,6 @@ import umc._th.spring.domain.Mission;
 import umc._th.spring.domain.enums.MissionStatus;
 import umc._th.spring.repository.MissionRepository.MissionRepository;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -19,8 +17,8 @@ public class MissionQueryServiceImpl implements MissionQueryService {
     private final MissionRepository missionRepository;
 
     @Override
-    public List<Mission> findAllMissionsByMemberIdAndStatus(Long memberId, MissionStatus status) {
-        return missionRepository.findAllByMemberIdAndStatus(memberId, status);
+    public Page<Mission> findAllMissionsByMemberIdAndStatus(Long memberId, MissionStatus status, Pageable pageable) {
+        return missionRepository.findAllByMemberIdAndStatus(memberId, status, pageable);
     }
 
     @Override
