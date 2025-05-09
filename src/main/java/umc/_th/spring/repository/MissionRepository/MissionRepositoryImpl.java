@@ -42,6 +42,7 @@ public class MissionRepositoryImpl implements MissionRepositoryCustom{
         long total = jpaQueryFactory
                 .select(mission.count())
                 .from(mission)
+                .join(memberMission).on(mission.id.eq(memberMission.mission.id))
                 .where(predicate)
                 .fetchOne();
 
