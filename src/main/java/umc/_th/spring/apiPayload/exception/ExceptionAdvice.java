@@ -20,7 +20,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import umc._th.spring.apiPayload.ApiResponse;
 import umc._th.spring.apiPayload.code.ErrorReasonDTO;
 import umc._th.spring.apiPayload.code.status.ErrorStatus;
-import umc._th.spring.apiPayload.exception.handler.TempHandler;
 import umc._th.spring.service.external.DiscordMessageProvider;
 
 @Slf4j
@@ -80,7 +79,6 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
                                                            HttpHeaders headers, HttpServletRequest request) {
 
         ApiResponse<Object> body = ApiResponse.onFailure(reason.getCode(),reason.getMessage(),null);
-        e.printStackTrace();
 
         WebRequest webRequest = new ServletWebRequest(request);
         return super.handleExceptionInternal(
