@@ -69,7 +69,6 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
         ErrorReasonDTO errorReasonHttpStatus = generalException.getErrorReasonHttpStatus();
 
         if(errorReasonHttpStatus.getHttpStatus() == HttpStatus.INTERNAL_SERVER_ERROR) {
-            System.out.println("ㅇㅇ여기까지는온다");
             discordMessageProvider.sendMessage(errorReasonHttpStatus);
         }
         return handleExceptionInternal(generalException,errorReasonHttpStatus,null,request);
