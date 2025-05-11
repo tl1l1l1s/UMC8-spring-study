@@ -20,10 +20,18 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import umc._th.spring.apiPayload.ApiResponse;
 import umc._th.spring.apiPayload.code.ErrorReasonDTO;
 import umc._th.spring.apiPayload.code.status.ErrorStatus;
+import umc._th.spring.apiPayload.exception.handler.TempHandler;
+import umc._th.spring.service.external.DiscordMessageProvider;
 
 @Slf4j
 @RestControllerAdvice(annotations = {RestController.class})
 public class ExceptionAdvice extends ResponseEntityExceptionHandler {
+
+    private final DiscordMessageProvider discordMessageProvider;
+
+    public ExceptionAdvice(DiscordMessageProvider discordMessageProvider) {
+        this.discordMessageProvider = discordMessageProvider;
+    }
 
     @ExceptionHandler
     public ResponseEntity<Object> validation(ConstraintViolationException e, WebRequest request) {
@@ -60,6 +68,11 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = GeneralException.class)
     public ResponseEntity onThrowException(GeneralException generalException, HttpServletRequest request) {
         ErrorReasonDTO errorReasonHttpStatus = generalException.getErrorReasonHttpStatus();
+
+        if(errorReasonHttpStatus.getHttpStatus() == HttpStatus.INTERNAL_SERVER_ERROR) {
+            System.out.println("ㅇㅇ여기까지는온다");
+            discordMessageProvider.sendMessage(errorReasonHttpStatus);
+        }
         return handleExceptionInternal(generalException,errorReasonHttpStatus,null,request);
     }
 

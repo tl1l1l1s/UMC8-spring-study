@@ -7,10 +7,6 @@ public class GeneralException extends RuntimeException {
 
     private BaseErrorCode code;
 
-    public GeneralException() {
-        super();
-    }
-
     public GeneralException(BaseErrorCode errorCode) {
         super(errorCode.getReason().getMessage());
         this.code = errorCode;
