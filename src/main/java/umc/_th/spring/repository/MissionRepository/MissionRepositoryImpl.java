@@ -22,11 +22,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MissionRepositoryImpl implements MissionRepositoryCustom{
 
-    private final JPAQueryFactory queryFactory;
+    private final JPAQueryFactory jpaQueryFactory;
     private final QMission mission = QMission.mission;
     private final QMemberMission memberMission = QMemberMission.memberMission;
     private final QStore store = QStore.store;
-    private final JPAQueryFactory jpaQueryFactory;
 
     @Override
     public Page<Mission> findAllByMemberIdAndStatus(@NonNull Long memberId, @NonNull MissionStatus status, Pageable pageable) {
@@ -34,7 +33,7 @@ public class MissionRepositoryImpl implements MissionRepositoryCustom{
                 .and(memberMission.member.id.eq(memberId))
                 .and(memberMission.status.eq(status));
 
-        List<Mission> missionList = queryFactory.selectFrom(mission)
+        List<Mission> missionList = jpaQueryFactory.selectFrom(mission)
                 .join(memberMission).on(mission.id.eq(memberMission.mission.id))
                 .where(predicate)
                 .fetch();
@@ -42,6 +41,7 @@ public class MissionRepositoryImpl implements MissionRepositoryCustom{
         long total = jpaQueryFactory
                 .select(mission.count())
                 .from(mission)
+                .join(memberMission).on(mission.id.eq(memberMission.mission.id))
                 .where(predicate)
                 .fetchOne();
 
