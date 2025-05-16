@@ -8,11 +8,11 @@ import umc._th.spring.web.dto.ReviewResponseDTO;
 
 public class ReviewConverter {
 
-    public static ReviewResponseDTO.AddReviewResultDTO toAddReviewResultDTO(Review revieww) {
+    public static ReviewResponseDTO.AddReviewResultDTO toAddReviewResultDTO(Review review) {
 
         return ReviewResponseDTO.AddReviewResultDTO.builder()
-                .reviewId(revieww.getId())
-                .createdAt(revieww.getCreatedAt())
+                .reviewId(review.getId())
+                .createdAt(review.getCreatedAt())
                 .build();
     }
 
