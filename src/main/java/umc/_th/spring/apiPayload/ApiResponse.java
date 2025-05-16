@@ -1,5 +1,6 @@
 package umc._th.spring.apiPayload;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -10,6 +11,7 @@ import umc._th.spring.apiPayload.code.status.SuccessStatus;
 @Getter
 @AllArgsConstructor
 @JsonPropertyOrder({"isSuccess", "code", "message", "result"})
+@JsonIgnoreProperties({"success"})
 public class ApiResponse<T> {
 
     @JsonProperty("isSuccess")
