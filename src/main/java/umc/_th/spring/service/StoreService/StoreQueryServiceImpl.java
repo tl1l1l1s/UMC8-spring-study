@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import umc._th.spring.apiPayload.code.status.ErrorStatus;
+import umc._th.spring.apiPayload.exception.handler.StoreHandler;
 import umc._th.spring.domain.Review;
 import umc._th.spring.domain.Store;
 import umc._th.spring.repository.ReviewRepository.ReviewRepository;
@@ -38,8 +40,8 @@ public class StoreQueryServiceImpl implements StoreQueryService {
 
     @Override
     public Page<Review> getReviewList(Long storeId, Integer page) {
-        Store store = storeRepository.findById(storeId).get();
+        Store store = storeRepository.findById(storeId).orElseThrow(() -> new StoreHandler(ErrorStatus.STORE_NOT_FOUND));
 
-        return reviewRepository.findAllByStore(store, PageRequest.of(page, 10));
+        return reviewRepository.findAllByStore(store, PageRequest.of(page-1, 10));
     }
 }
