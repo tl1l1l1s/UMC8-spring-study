@@ -22,11 +22,6 @@ public class StoreQueryServiceImpl implements StoreQueryService {
     private final ReviewRepository reviewRepository;
 
     @Override
-    public Boolean existsById(Long id) {
-        return storeRepository.existsById(id);
-    }
-
-    @Override
     public Optional<Store> findStore(Long id) {
         return storeRepository.findById(id);
     }

@@ -9,7 +9,6 @@ import java.util.Optional;
 
 public interface StoreQueryService {
 
-    Boolean existsById(Long id);
     Optional<Store> findStore(Long id);
     List<Store> findStoreByNameAndScore(String name, Float score);
     Page<Review> getReviewList(Long storeId, Integer page);
