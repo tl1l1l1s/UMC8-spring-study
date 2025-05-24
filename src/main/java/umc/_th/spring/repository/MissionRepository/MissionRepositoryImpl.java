@@ -3,6 +3,7 @@ package umc._th.spring.repository.MissionRepository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityManager;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,10 +23,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MissionRepositoryImpl implements MissionRepositoryCustom{
 
+    private final EntityManager entityManager;
     private final JPAQueryFactory jpaQueryFactory;
     private final QMission mission = QMission.mission;
     private final QMemberMission memberMission = QMemberMission.memberMission;
     private final QStore store = QStore.store;
+
+    @Override
+    public Mission addMission(Mission mission) {
+        entityManager.persist(mission);
+        return mission;
+    }
 
     @Override
     public Page<Mission> findAllByMemberIdAndStatus(@NonNull Long memberId, @NonNull MissionStatus status, Pageable pageable) {
