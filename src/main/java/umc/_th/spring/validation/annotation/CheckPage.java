@@ -2,12 +2,12 @@ package umc._th.spring.validation.annotation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
-import umc._th.spring.validation.validator.CategoriesExistValidator;
+import umc._th.spring.validation.validator.PageCheckValidator;
 
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = CategoriesExistValidator.class)
+@Constraint(validatedBy = PageCheckValidator.class)
 @Target( { ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CheckPage {
