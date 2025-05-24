@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import umc._th.spring.apiPayload.ApiResponse;
 import umc._th.spring.converter.ReviewConverter;
@@ -21,6 +22,7 @@ import umc._th.spring.web.dto.StoreResponseDTO;
 
 @RestController
 @RequiredArgsConstructor
+@Validated
 @RequestMapping("/stores")
 public class StoreRestController {
 
@@ -43,7 +45,7 @@ public class StoreRestController {
     @Parameters({
             @Parameter(name = "storeId", description = "가게의 아이디. path variable입니다.")
     })
-    public ApiResponse<ReviewResponseDTO.ReviewPreViewListDTO> getReviewList(@ExistStore @PathVariable(name = "storeId") Long storeId, @RequestParam(name = "page") Integer page) {
+    public ApiResponse<ReviewResponseDTO.ReviewPreViewListDTO> getReviewList(@ExistStore @PathVariable(name = "storeId") Long storeId, @RequestParam(name = "page", defaultValue = "0") Integer page) {
         return ApiResponse.onSuccess(ReviewConverter.reviewPreViewListDTO(storeQueryService.getReviewList(storeId,page)));
     }
 }
