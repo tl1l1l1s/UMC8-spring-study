@@ -31,4 +31,15 @@ public class MemberMissionCommandServiceImpl implements MemberMissionCommandServ
 
         memberMissionRepository.startMission(member, mission);
     }
+
+    @Override
+    public void completeMission(Long missionId, Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        Mission mission = missionRepository.findById(missionId)
+                .orElseThrow(() -> new MissionHandler(ErrorStatus.MISSION_NOT_FOUND));
+
+        memberMissionRepository.endMission(member, mission);
+    }
 }
