@@ -16,7 +16,7 @@ public class ReviewRestController {
 
     private final ReviewCommandService reviewCommandService;
 
-    @PostMapping("/")
+    @PostMapping("/{storeId}")
     public ApiResponse<ReviewResponseDTO.AddReviewResultDTO> addStore(@RequestParam Long memberId, @RequestParam Long storeId, @RequestBody @Valid ReviewRequestDTO.AddReviewDTO request) {
         return ApiResponse.onSuccess(ReviewConverter.toAddReviewResultDTO(
                 reviewCommandService.createReview(memberId, storeId, request)));

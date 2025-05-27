@@ -27,8 +27,7 @@ public class MemberMissionRepositoryImpl implements MemberMissionRepositoryCusto
     public void startMission(Member member, Mission mission) {
         BooleanBuilder predicate = new BooleanBuilder()
                 .and(memberMission.member.id.eq(member.getId()))
-                .and(memberMission.mission.id.eq(mission.getId()))
-                .and(memberMission.status.eq(MissionStatus.CHALLENGING));
+                .and(memberMission.mission.id.eq(mission.getId()));
 
         List<MemberMission> checkExists = jpaQueryFactory.selectFrom(memberMission)
                 .where(predicate)
@@ -42,6 +41,27 @@ public class MemberMissionRepositoryImpl implements MemberMissionRepositoryCusto
                 .member(member)
                 .mission(mission)
                 .status(MissionStatus.CHALLENGING)
+                .build());
+    }
+
+    @Override
+    public void endMission(Member member, Mission mission) {
+        BooleanBuilder predicate = new BooleanBuilder()
+                .and(memberMission.member.id.eq(member.getId()))
+                .and(memberMission.mission.id.eq(mission.getId()))
+                .and(memberMission.status.eq(MissionStatus.CHALLENGING));
+
+        List<MemberMission> checkExists = jpaQueryFactory.selectFrom(memberMission)
+                .where(predicate)
+                .fetch();
+        if(!checkExists.isEmpty()) {
+            throw new MissionHandler(ErrorStatus.ALREADY_COMPLETED_MISSION);
+        }
+
+        entityManager.persist(MemberMission.builder()
+                .member(member)
+                .mission(mission)
+                .status(MissionStatus.COMPLETED)
                 .build());
     }
 }
