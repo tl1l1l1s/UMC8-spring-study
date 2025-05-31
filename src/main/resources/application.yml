@@ -20,3 +20,14 @@ spring:
 discord:
   name: discord-feign-client
   webhook-url: ${DISCORD_WEBHOOK_URL}
+jwt:
+  token:
+    secretKey: umceightfightingjwttokenauthentication
+    expiration:
+      access: 14400000
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.security: DEBUG
+    root: INFO

@@ -2,6 +2,7 @@ package umc._th.spring.converter;
 
 import umc._th.spring.domain.Member;
 import umc._th.spring.domain.enums.Gender;
+import umc._th.spring.domain.enums.Role;
 import umc._th.spring.web.dto.MemberRequestDTO;
 import umc._th.spring.web.dto.MemberResponseDTO;
 import java.time.LocalDateTime;
@@ -16,6 +17,21 @@ public class MemberConverter {
                 .build();
     }
 
+    public static MemberResponseDTO.LoginResultDTO toLoginResultDTO(Long memberId, String accessToken){
+        return MemberResponseDTO.LoginResultDTO.builder()
+                .memberId(memberId)
+                .accessToken(accessToken)
+                .build();
+    }
+
+    public static MemberResponseDTO.MemberInfoDTO toMemberInfoDTO(Member member){
+        return MemberResponseDTO.MemberInfoDTO.builder()
+                .name(member.getName())
+                .email(member.getEmail())
+                .gender(member.getGender().name())
+                .build();
+    }
+
     public static Member toMember(MemberRequestDTO.JoinDTO request){
 
         Gender gender = switch (request.getGender()) {
@@ -24,12 +40,20 @@ public class MemberConverter {
             default -> Gender.NONE;
         };
 
+        Role role = switch (request.getRole()) {
+            case ADMIN -> Role.ADMIN;
+            case USER -> Role.USER;
+        };
+
         return Member.builder()
+                .email(request.getEmail())
+                .password(request.getPassword())
                 .address(request.getAddress())
                 .specAddress(request.getSpecAddress())
                 .gender(gender)
                 .name(request.getName())
                 .memberPreferList(new HashSet<>())
+                .role(role)
                 .build();
     }
 }

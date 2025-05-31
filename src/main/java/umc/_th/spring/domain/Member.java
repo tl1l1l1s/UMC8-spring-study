@@ -8,6 +8,7 @@ import umc._th.spring.domain.common.BaseEntity;
 import umc._th.spring.domain.enums.Gender;
 import umc._th.spring.domain.enums.MemberStatus;
 import umc._th.spring.domain.enums.SocialType;
+import umc._th.spring.domain.enums.Role;
 import umc._th.spring.domain.mapping.*;
 
 import java.time.LocalDate;
@@ -15,7 +16,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 
 @Entity
 @Getter
@@ -29,6 +29,9 @@ public class Member extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
+    private String password;
 
     private String name;
 
@@ -48,9 +51,13 @@ public class Member extends BaseEntity {
 
     private LocalDate inactiveDate;
 
+    @Column(nullable = false, unique = true)
     private String email;
 
     private String phone;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean isPhoneAuthorized;
@@ -88,5 +95,9 @@ public class Member extends BaseEntity {
                 + ", phone " + phone
                 + ", isPhoneAuthorized " + isPhoneAuthorized
                 + ", point " + point;
+    }
+
+    public void encodePassword(String password) {
+        this.password = password;
     }
 }
