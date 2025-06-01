@@ -16,12 +16,14 @@ public enum ErrorStatus implements BaseErrorCode {
     _FORBIDDEN(HttpStatus.FORBIDDEN, "COMMON403", "금지된 요청입니다."),
 
     PAGE_INVALID(HttpStatus.BAD_REQUEST, "PAGE4001", "페이지의 수가 잘못되었습니다."),
-
+    
+    INVALID_TOKEN(HttpStatus.BAD_REQUEST, "AUTH4001", "유효하지 않은 토큰입니다."),
+    
     MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "MEMBER4001", "사용자가 없습니다."),
     NICKNAME_NOT_EXIST(HttpStatus.BAD_REQUEST, "MEMBER4002", "닉네임은 필수입니다."),
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "MEMBER4003", "잘못된 비밀번호입니다."),
-    INVALID_TOKEN(HttpStatus.BAD_REQUEST, "MEMBER4004", "유효하지 않은 토큰입니다."),
-
+    INACTIVE_MEMBER(HttpStatus.BAD_REQUEST, "MEMBER4004", "비활성화된 유저입니다."),
+    
     TEMP_EXCEPTION(HttpStatus.BAD_REQUEST, "TEMP4001", "테스트용 에러"),
 
     FOOD_CATEGORY_NOT_FOUND(HttpStatus.BAD_REQUEST, "FOODTYPE4001" , "존재하지 않는 음식 종류입니다."),

@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import umc._th.spring.apiPayload.code.status.ErrorStatus;
 import umc._th.spring.apiPayload.exception.handler.FoodCategoryHandler;
 import umc._th.spring.apiPayload.exception.handler.MemberHandler;
+import umc._th.spring.config.properties.JwtProperties;
 import umc._th.spring.config.security.jwt.JwtTokenProvider;
 import umc._th.spring.converter.MemberConverter;
 import umc._th.spring.converter.MemberPreferConverter;
@@ -44,12 +45,6 @@ public class MemberCommandServiceImpl implements MemberCommandService{
                     return foodTypeRepository.findById(category).orElseThrow(() -> new FoodCategoryHandler(ErrorStatus.FOOD_CATEGORY_NOT_FOUND));
                 }).collect(Collectors.toList());
 
-        System.out.println("=== 회원가입 요청 데이터 ===");
-        System.out.println("Email: " + request.getEmail());
-        System.out.println("Name: " + request.getName());
-        System.out.println("PreferCategory: " + request.getPreferCategory());
-        System.out.println("============================");
-
         List<MemberPrefer> memberPreferList = MemberPreferConverter.toMemberPreferList(foodCategoryList);
 
         memberPreferList.forEach(memberPrefer -> {memberPrefer.setMember(newMember);});
@@ -71,10 +66,12 @@ public class MemberCommandServiceImpl implements MemberCommandService{
                 member.getEmail(), null,
                 Collections.singleton(() -> member.getRole().name()));
 
-        String accessToken = jwtTokenProvider.generateToken(authentication);
+        String accessToken = jwtTokenProvider.generateToken(authentication, JwtProperties.TokenType.ACCESS);
+        String refreshToken = jwtTokenProvider.generateToken(authentication, JwtProperties.TokenType.REFRESH);
         return MemberConverter.toLoginResultDTO(
                 member.getId(),
-                accessToken
+                accessToken,
+                refreshToken
         );
     }
 }

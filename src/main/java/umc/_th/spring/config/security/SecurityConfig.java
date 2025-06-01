@@ -29,9 +29,9 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/members/", "/members/login", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/members/").permitAll() // 회원가입
-                        .requestMatchers(HttpMethod.POST, "/members/login").permitAll() // 로그인
+                        .requestMatchers("/", "/members/**",  "/auth/refresh", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/members/").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/members/login").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

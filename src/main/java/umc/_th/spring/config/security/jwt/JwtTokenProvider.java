@@ -28,14 +28,24 @@ public class JwtTokenProvider {
         return Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes());
     }
 
-    public String generateToken(Authentication authentication) {
+    public String generateToken(Authentication authentication, JwtProperties.TokenType tokenType) {
         String email = authentication.getName();
 
+        if(tokenType == JwtProperties.TokenType.ACCESS) {
+            return Jwts.builder()
+                    .setSubject(email)
+                    .claim("role", authentication.getAuthorities().iterator().next().getAuthority())
+                    .setIssuedAt(new Date())
+                    .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getExpiration().getAccess()))
+                    .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                    .compact();
+        }
+        
         return Jwts.builder()
                 .setSubject(email)
                 .claim("role", authentication.getAuthorities().iterator().next().getAuthority())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getExpiration().getAccess()))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getExpiration().getAccess() * 42))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
