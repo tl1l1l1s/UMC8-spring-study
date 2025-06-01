@@ -4,6 +4,18 @@ spring:
     url: jdbc:mysql://localhost:3306/${DB_NAME}
     username: ${DB_USER}
     password: ${DB_PASSWORD}
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_PW}
+            redirect-uri: http://localhost:8080/login/oauth2/code/google
+            scope:
+              - email
+              - profile
+              - openid
   sql:
     init:
       mode: never

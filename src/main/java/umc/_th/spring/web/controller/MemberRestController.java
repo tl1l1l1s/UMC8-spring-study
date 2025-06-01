@@ -44,6 +44,12 @@ public class MemberRestController {
     public ApiResponse<MemberResponseDTO.LoginResultDTO> login(@RequestBody @Valid MemberRequestDTO.LoginRequestDTO request) {
         return ApiResponse.onSuccess(memberCommandService.loginMember(request));
     }
+    
+    @PostMapping("/login/google")
+    @Operation(summary = "유저 구글 로그인 API", description = "유저 구글 로그인 API입니다.")
+    public ApiResponse<MemberResponseDTO.LoginResultDTO> loginUsingGoogle(@RequestBody @Valid MemberRequestDTO.LoginRequestDTO request) {
+        return ApiResponse.onSuccess(memberCommandService.loginMember(request));
+    }
 
     @GetMapping("/info")
     @Operation(summary = "유저 내 정보 조회 API - 인증 필요",
