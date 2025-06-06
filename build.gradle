@@ -6,6 +6,13 @@ plugins {
 
 group = 'umc.8th'
 version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
 
 java {
 	toolchain {
@@ -62,8 +69,8 @@ tasks.withType(JavaCompile) {
 	options.annotationProcessorGeneratedSourcesDirectory = file(querydslDir)
 }
 
-clean {
-	delete file(querydslDir)
+clean.doLast {
+	file(querydslDir).deleteDir()
 }
 
 tasks.named('test') {
