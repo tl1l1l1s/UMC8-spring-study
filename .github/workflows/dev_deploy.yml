@@ -1,28 +1,35 @@
 name: CI/CD Pipeline
+
 on:
   push:
     branches: [ develop ]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
+
       - name: Make application.yml
         run: |
           cd ./src/main/resources
           echo "${{ secrets.APPLICATION_YML }}" > ./application.yml
         shell: bash
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+
       - name: Build with Gradle
         uses: gradle/gradle-build-action@v2
         with:
           arguments: clean build
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
@@ -38,13 +45,16 @@ jobs:
         with:
           name: umc7thServer
           path: ./
+
       - name: Deploy to EC2
         env:
           EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
           EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
           EC2_HOST: ${{ secrets.EC2_HOST }}
         run: |
-          # SSH 키 설정 및 디버깅
+          set -e  # 중요한 에러에서만 종료
+          
+          # SSH 키 설정
           echo "$EC2_SSH_KEY" > private_key.pem
           chmod 600 private_key.pem
           
@@ -59,46 +69,91 @@ jobs:
           ssh -i private_key.pem -o StrictHostKeyChecking=no -o ConnectTimeout=30 \
             $EC2_USERNAME@$EC2_HOST "echo 'SSH connection successful'"
           
-          # JAR 파일 찾기 (현재 디렉토리에서)
+          # JAR 파일 찾기
           jar_file=$(find . -name '*.jar' ! -name '*plain.jar' | head -n 1)
           echo "Found JAR file: $jar_file"
           
-          # 파일이 존재하는지 확인
+          # 파일 존재 확인
           if [ ! -f "$jar_file" ]; then
             echo "JAR file not found!"
             exit 1
           fi
           
           # EC2에 JAR 파일 업로드
+          echo "Uploading JAR file to EC2..."
           scp -i private_key.pem -o StrictHostKeyChecking=no -o ConnectTimeout=30 \
             "$jar_file" $EC2_USERNAME@$EC2_HOST:/home/$EC2_USERNAME/umc7thServer.jar
           
-          # 애플리케이션 재시작
+          # 애플리케이션 재시작 (에러에 강한 방식)
+          echo "Restarting application on EC2..."
           ssh -i private_key.pem -o StrictHostKeyChecking=no -o ConnectTimeout=30 \
-            $EC2_USERNAME@$EC2_HOST "
-            # 기존 애플리케이션 종료 (에러 무시)
-            echo 'Checking for existing application...'
-            if pgrep -f 'umc7thServer.jar' > /dev/null 2>&1; then
-              echo 'Stopping existing application...'
-              pkill -f 'umc7thServer.jar' || true
-              sleep 5
-              pkill -9 -f 'umc7thServer.jar' 2>/dev/null || true
+            $EC2_USERNAME@$EC2_HOST '
+            set +e  # 이 섹션에서는 에러로 인한 종료 방지
+          
+            echo "Checking for existing application..."
+          
+            # 기존 프로세스 확인 및 종료
+            if pgrep -f "umc7thServer.jar" > /dev/null 2>&1; then
+              echo "Found existing application, stopping..."
+          
+              # 우아한 종료 시도
+              pkill -TERM -f "umc7thServer.jar" 2>/dev/null || echo "TERM signal failed, continuing..."
+              sleep 10
+          
+              # 여전히 실행 중이면 강제 종료
+              if pgrep -f "umc7thServer.jar" > /dev/null 2>&1; then
+                echo "Graceful shutdown failed, force killing..."
+                pkill -KILL -f "umc7thServer.jar" 2>/dev/null || echo "KILL signal failed, continuing..."
+                sleep 3
+              fi
+          
+              # 최종 확인
+              if pgrep -f "umc7thServer.jar" > /dev/null 2>&1; then
+                echo "Warning: Some processes may still be running"
+              else
+                echo "Application stopped successfully"
+              fi
             else
-              echo 'No existing application found'
+              echo "No existing application found"
             fi
+          
+            # 포트 사용 확인 및 정리 (선택적)
+            echo "Checking port usage..."
+            netstat -tlnp 2>/dev/null | grep ":8080 " || echo "Port 8080 is available"
           
             # 새 애플리케이션 실행
-            echo 'Starting new application...'
-            nohup java -jar /home/$EC2_USERNAME/umc7thServer.jar > app.log 2>&1 &
+            echo "Starting new application..."
+            cd /home/'$EC2_USERNAME'
+          
+            # 기존 로그 백업 (선택적)
+            if [ -f app.log ]; then
+              mv app.log app.log.backup.$(date +%Y%m%d_%H%M%S) 2>/dev/null || true
+            fi
+          
+            # 애플리케이션 실행
+            nohup java -jar umc7thServer.jar > app.log 2>&1 &
+            APP_PID=$!
+            echo "Application started with PID: $APP_PID"
           
             # 실행 확인
-            sleep 5
-            if pgrep -f 'umc7thServer.jar' > /dev/null 2>&1; then
-              echo 'Application started successfully'
+            sleep 10
+            if pgrep -f "umc7thServer.jar" > /dev/null 2>&1; then
+              echo "✅ Application started successfully"
+              echo "Process info:"
+              pgrep -f "umc7thServer.jar" | head -5
             else
-              echo 'Application may be starting... Check logs with: tail -f app.log'
+              echo "⚠️  Application startup verification failed"
+              echo "Recent log entries:"
+              tail -20 app.log 2>/dev/null || echo "No log file found"
+              exit 1
             fi
-          "
+          
+            echo "Deployment completed"
+          ' || {
+            echo "⚠️ SSH command failed, but continuing cleanup..."
+          }
           
           # 민감한 정보 삭제
           rm -f private_key.pem
+          
+          echo "Deploy step completed"
