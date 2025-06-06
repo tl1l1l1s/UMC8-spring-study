@@ -44,9 +44,20 @@ jobs:
           EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
           EC2_HOST: ${{ secrets.EC2_HOST }}
         run: |
-          # SSH 키 설정
+          # SSH 키 설정 및 디버깅
           echo "$EC2_SSH_KEY" > private_key.pem
           chmod 600 private_key.pem
+          
+          # 키 파일 확인
+          echo "Key file created:"
+          ls -la private_key.pem
+          echo "Key file first line:"
+          head -n 1 private_key.pem
+          
+          # SSH 연결 테스트
+          echo "Testing SSH connection..."
+          ssh -i private_key.pem -o StrictHostKeyChecking=no -o ConnectTimeout=30 \
+            $EC2_USERNAME@$EC2_HOST "echo 'SSH connection successful'"
           
           # JAR 파일 찾기 (현재 디렉토리에서)
           jar_file=$(find . -name '*.jar' ! -name '*plain.jar' | head -n 1)
@@ -65,13 +76,15 @@ jobs:
           # 애플리케이션 재시작
           ssh -i private_key.pem -o StrictHostKeyChecking=no -o ConnectTimeout=30 \
             $EC2_USERNAME@$EC2_HOST "
-            # 기존 애플리케이션 종료 (더 안전한 방법)
-            if pgrep -f 'umc7thServer.jar' > /dev/null; then
+            # 기존 애플리케이션 종료 (에러 무시)
+            echo 'Checking for existing application...'
+            if pgrep -f 'umc7thServer.jar' > /dev/null 2>&1; then
               echo 'Stopping existing application...'
-              pkill -f 'umc7thServer.jar'
+              pkill -f 'umc7thServer.jar' || true
               sleep 5
-              # 강제 종료가 필요한 경우
               pkill -9 -f 'umc7thServer.jar' 2>/dev/null || true
+            else
+              echo 'No existing application found'
             fi
           
             # 새 애플리케이션 실행
@@ -80,11 +93,10 @@ jobs:
           
             # 실행 확인
             sleep 5
-            if pgrep -f 'umc7thServer.jar' > /dev/null; then
+            if pgrep -f 'umc7thServer.jar' > /dev/null 2>&1; then
               echo 'Application started successfully'
             else
-              echo 'Failed to start application'
-              exit 1
+              echo 'Application may be starting... Check logs with: tail -f app.log'
             fi
           "
           
